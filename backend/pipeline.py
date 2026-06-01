@@ -25,8 +25,15 @@ def get_native_youtube_transcript(url: str) -> str:
         snippets = transcript.fetch()
         return " ".join([s.text for s in snippets])
     except Exception as e:
-        print(f"Native transcript failed: {e}")
-        return ""
+        error_name = type(e).__name__
+        if "NoTranscriptFound" in error_name or "TranscriptsDisabled" in error_name:
+            print("Video exists but no English transcript found. Will use fallback.")
+            return ""
+        elif "VideoUnavailable" in error_name:
+            raise Exception("This video is deleted, private, or unavailable.")
+        else:
+            print(f"Native transcript failed: {error_name} - {str(e)}")
+            raise Exception(f"YouTube blocked Render from fetching captions. Error: {error_name}. Please try hosting locally or using residential proxies.")
 
 def _is_youtube(url: str) -> bool:
     u = url.lower()
