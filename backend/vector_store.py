@@ -7,7 +7,7 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 PERSIST_DIR = "./chroma_db"
 
 embedding_model = GoogleGenerativeAIEmbeddings(
-    model="models/text-embedding-004",
+    model="models/gemini-embedding-2",
     google_api_key=os.environ.get("GEMINI_API_KEY")
 )
 
