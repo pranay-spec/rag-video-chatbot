@@ -13,42 +13,52 @@ def get_native_youtube_transcript(url: str) -> str:
     match = re.search(r"(?:v=|youtu\.be/|shorts/)([0-9A-Za-z_-]{11})", url)
     if not match:
         return ""
+    vid = match.group(1)
     try:
-        video_id = match.group(1)
         api = YouTubeTranscriptApi()
-        t_list = api.list(video_id)
-        transcript = t_list.find_transcript(['en', 'en-US', 'en-GB'])
+        t_list = api.list(vid)
+        # Try manually created first, then auto-generated
+        try:
+            transcript = t_list.find_transcript(['en', 'en-US', 'en-GB'])
+        except Exception:
+            transcript = t_list.find_generated_transcript(['en'])
         snippets = transcript.fetch()
         return " ".join([s.text for s in snippets])
     except Exception as e:
         print(f"Native transcript failed: {e}")
         return ""
 
+def _is_youtube(url: str) -> bool:
+    u = url.lower()
+    return "youtube.com" in u or "youtu.be" in u
+
 def process_video(url: str, video_id: str) -> dict:
     start = time.time()
     print(f"\n{'='*50}")
     print(f"Processing Video {video_id}: {url}")
 
-    # 1. Try to fetch native subtitles directly (avoids yt-dlp bot blocks!)
     transcript = ""
-    if "youtube" in url or "youtu.be" in url:
-        print("Attempting to fetch native YouTube transcript...")
-        transcript = get_native_youtube_transcript(url)
 
-    # 2. Fallback to downloading + Whisper if no native transcript (e.g. Instagram)
-    if transcript.strip():
-        print("Successfully fetched native transcript!")
+    if _is_youtube(url):
+        # YouTube path: ONLY use native transcript API (yt-dlp is blocked on cloud servers)
+        print("Fetching YouTube transcript via native API...")
+        transcript = get_native_youtube_transcript(url)
+        if not transcript.strip():
+            raise Exception(
+                f"Could not fetch transcript for this YouTube video. "
+                f"The video may not have English captions enabled."
+            )
     else:
-        print("Native transcript failed. Downloading audio...")
+        # Non-YouTube (Instagram, etc): use yt-dlp + Whisper
+        print("Downloading audio...")
         audio_file = download_audio(url, video_id)
-        
         print("Transcribing with Whisper API...")
         transcript = transcribe_audio(audio_file)
 
     print(f"Transcript length: {len(transcript)} chars")
 
     if not transcript.strip():
-        raise Exception(f"Empty transcript for video {video_id}. Could not extract audio or subtitles.")
+        raise Exception(f"Empty transcript for video {video_id}.")
 
     print("Chunking + embedding into ChromaDB...")
     num_chunks = store_transcript(transcript, video_id)
