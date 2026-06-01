@@ -40,14 +40,24 @@ def process_video(url: str, video_id: str) -> dict:
     transcript = ""
 
     if _is_youtube(url):
-        # YouTube path: ONLY use native transcript API (yt-dlp is blocked on cloud servers)
+        # YouTube: try native transcript API first (fastest, always works on cloud)
         print("Fetching YouTube transcript via native API...")
         transcript = get_native_youtube_transcript(url)
+
         if not transcript.strip():
-            raise Exception(
-                f"Could not fetch transcript for this YouTube video. "
-                f"The video may not have English captions enabled."
-            )
+            # Fallback: download audio with yt-dlp + transcribe with Whisper
+            print("No native captions found. Trying audio download + Whisper...")
+            try:
+                audio_file = download_audio(url, video_id)
+                print("Transcribing with Whisper API...")
+                transcript = transcribe_audio(audio_file)
+            except Exception as e:
+                print(f"Audio download fallback also failed: {e}")
+                raise Exception(
+                    f"Could not process this YouTube video. "
+                    f"No captions found and audio download was blocked. "
+                    f"Please try a different video."
+                )
     else:
         # Non-YouTube (Instagram, etc): use yt-dlp + Whisper
         print("Downloading audio...")
