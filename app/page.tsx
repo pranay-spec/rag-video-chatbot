@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
 interface Citation {
   video_id: string;
   chunk_id: number;
@@ -20,7 +19,7 @@ interface Message {
 interface VideoMeta {
   title: string;
   creator: string;
-  views: number | null;          // null = not available (e.g. Instagram without auth)
+  views: number | null;          
   likes: number;
   comments: number;
   duration: number;
@@ -35,8 +34,8 @@ interface VideoMeta {
 interface VideoData {
   video_id: string;
   chunks: number;
-  engagement_rate: number | null; // null when views unavailable (Instagram)
-  interaction_score: number;      // likes + comments — always available
+  engagement_rate: number | null; 
+  interaction_score: number;      
   views_available: boolean;
   metadata: VideoMeta;
   transcript_preview: string;

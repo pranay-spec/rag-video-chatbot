@@ -10,7 +10,8 @@ def download_audio(url, video_id):
         "outtmpl": output_path,
         "quiet": False,
         "noplaylist": True,
-        "overwrites": True
+        "overwrites": True,
+        "extractor_args": {"youtube": {"player_client": ["android"]}}
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:

@@ -34,8 +34,7 @@ def process_video(url: str, video_id: str) -> dict:
 
     likes = metadata.get("likes") or 0
     comments = metadata.get("comments") or 0
-    interaction_score = likes + comments  # fallback metric when views unavailable
-
+    interaction_score = likes + comments 
     return {
         "video_id": video_id,
         "chunks": num_chunks,
