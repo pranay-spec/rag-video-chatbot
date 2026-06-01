@@ -54,9 +54,8 @@ def process_video(url: str, video_id: str) -> dict:
             except Exception as e:
                 print(f"Audio download fallback also failed: {e}")
                 raise Exception(
-                    f"Could not process this YouTube video. "
-                    f"No captions found and audio download was blocked. "
-                    f"Please try a different video."
+                    f"This video lacks captions. Attempting to download the raw audio failed because YouTube blocks traffic from free cloud server IPs (Render.com) to prevent bots. "
+                    f"In a production environment, this is solved using residential proxies. Please test with a video that has captions!"
                 )
     else:
         # Non-YouTube (Instagram, etc): use yt-dlp + Whisper
