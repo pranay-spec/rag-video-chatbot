@@ -1,15 +1,14 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 from langchain_community.vectorstores import Chroma
-try:
-    from langchain_huggingface import HuggingFaceEmbeddings
-except ImportError:
-    from langchain_community.embeddings import HuggingFaceEmbeddings  # type: ignore[no-redef]
+import os
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 PERSIST_DIR = "./chroma_db"
 
-embedding_model = HuggingFaceEmbeddings(
-    model_name="sentence-transformers/all-MiniLM-L6-v2"
+embedding_model = GoogleGenerativeAIEmbeddings(
+    model="models/text-embedding-004",
+    google_api_key=os.environ.get("GEMINI_API_KEY")
 )
 
 
