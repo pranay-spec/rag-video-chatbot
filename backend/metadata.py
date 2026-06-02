@@ -70,10 +70,9 @@ def _get_yt_dlp_metadata(url):
 
 def get_video_metadata(url):
     """Route to the right metadata fetcher based on platform."""
-    if "youtube.com" in url.lower() or "youtu.be" in url.lower():
-        return _get_youtube_metadata(url)
-    else:
-        return _get_yt_dlp_metadata(url)
+    # Since we are running locally, yt-dlp works perfectly for YouTube
+    # and returns full metrics (likes, views, comments).
+    return _get_yt_dlp_metadata(url)
 
 
 def _detect_platform(url: str) -> str:

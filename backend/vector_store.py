@@ -4,7 +4,7 @@ from langchain_community.vectorstores import Chroma
 import os
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
-PERSIST_DIR = "./chroma_db"
+PERSIST_DIR = "./chroma_db_v2"
 
 embedding_model = GoogleGenerativeAIEmbeddings(
     model="models/gemini-embedding-2",

@@ -3,6 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 from pipeline import process_video
 from rag_chat import ask_rag, ask_rag_stream, reset_memory
 from compare_chat import compare_videos, compare_videos_stream
